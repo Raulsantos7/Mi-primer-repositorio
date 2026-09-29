@@ -1,0 +1,6 @@
+node_modules/
+stills/
+audio/_*
+sfx.json
+_*.mp4
+ffmpeg2pass*
