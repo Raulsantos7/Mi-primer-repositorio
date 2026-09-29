@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Come Local, Come Fresco</title>
+<style>
+@font-face{font-family:"Baloo 2";font-weight:400 800;font-display:block;src:url(fonts/baloo2.woff2) format("woff2")}
+@font-face{font-family:"Caveat";font-weight:400 700;font-display:block;src:url(fonts/caveat.woff2) format("woff2")}
+:root{
+  --page:#eceae4; --panel:#ffffff; --text:#1f2328; --muted:#6b6f76; --line:#d6d3cb; --btn:#1f2328; --btn-text:#fff;
+  --ink:#1f2328; --board:#fdfdfb;
+  --orange:#F28C28; --lime:#7DB83A; --banana:#F2B705; --mandarina:#F26B1D; --red:#E8505B; --blue:#3F6FB5;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --page:#16181c; --panel:#23262c; --text:#eceae4; --muted:#9aa0a8; --line:#353941; --btn:#eceae4; --btn-text:#16181c; }
+}
+:root[data-theme="dark"]{ --page:#16181c; --panel:#23262c; --text:#eceae4; --muted:#9aa0a8; --line:#353941; --btn:#eceae4; --btn-text:#16181c; }
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--page);color:var(--text);font-family:"Baloo 2",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px 16px;overflow:hidden}
+#frame{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.25);flex:none}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%,#ffffff 0%,var(--board) 60%,#f1f0ea 100%);color:var(--ink)}
+
+/* Controles */
+#controls{display:flex;align-items:center;gap:10px;width:100%;max-width:560px;flex:none}
+#controls button{border:0;background:var(--btn);color:var(--btn-text);font:700 15px "Baloo 2",sans-serif;border-radius:999px;height:38px;min-width:38px;padding:0 14px;cursor:pointer}
+#bar{flex:1;height:8px;background:var(--line);border-radius:99px;cursor:pointer;position:relative}
+#fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--orange);border-radius:99px}
+#time{font:600 14px "Baloo 2",sans-serif;color:var(--muted);min-width:78px;text-align:right;font-variant-numeric:tabular-nums}
+body.rec{padding:0;display:block;background:#fff}
+body.rec #controls{display:none}
+body.rec #frame{border-radius:0;box-shadow:none}
+
+/* Escenas */
+.scene{position:absolute;inset:0}
+.a{position:absolute}
+.hand-t{font-family:"Caveat",cursive;font-weight:700}
+.big{font-family:"Baloo 2",sans-serif;font-weight:800;line-height:1;letter-spacing:-1px}
+.nw{white-space:nowrap}
+.center{left:0;right:0;text-align:center}
+.center>span{display:inline-block}
+[data-fx]{will-change:transform,opacity,clip-path}
+svg{overflow:visible}
+svg .k{stroke:var(--ink);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.draw *{fill-opacity:var(--fo,0)}
+.nofill{fill:none}
+.photo{filter:drop-shadow(0 22px 26px rgba(60,40,10,.22))}
+.blob{border-radius:50%}
+.sticker{width:230px;height:230px;border-radius:50%;border:6px solid var(--ink);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font:800 46px/0.95 "Baloo 2",sans-serif;box-shadow:6px 8px 0 var(--ink)}
+.bul{left:200px;font:700 60px/1.1 "Baloo 2",sans-serif;white-space:nowrap}
+.bul b{font-weight:800;background:linear-gradient(transparent 58%,var(--hl) 58%, var(--hl) 92%,transparent 92%)}
+.chk{width:96px;height:96px;left:80px}
+.row-t{font:800 58px/1.05 "Baloo 2",sans-serif;white-space:nowrap}
+.row-d{font:600 40px/1.2 "Baloo 2",sans-serif;color:#4a4f57}
+.bubble{background:#fff;border:6px solid var(--ink);border-radius:46px;padding:26px 40px;font:800 58px/1.05 "Baloo 2",sans-serif;box-shadow:6px 8px 0 var(--ink)}
+.bubble::after{content:"";position:absolute;left:-44px;top:70px;border:22px solid transparent;border-right:30px solid var(--ink)}
+#hand{position:absolute;left:0;top:0;width:560px;height:440px;pointer-events:none;z-index:50;transform:translate(1300px,2200px)}
+</style>
+</head>
+<body>
+<div id="frame">
+<div id="stage">
+
+  <!-- ESCENA 1: Portada -->
+  <section class="scene" data-dur="5.5">
+    <div class="a center hand-t" style="top:170px;font-size:84px"><span data-fx="write" data-t=".2" data-d=".8">Tu salud empieza en</span></div>
+    <div class="a center big" style="top:285px;font-size:150px"><span data-fx="write" data-t="1" data-d=".7">tu mercado</span></div>
+    <div class="a center big" style="top:430px;font-size:200px;color:var(--orange);text-shadow:6px 6px 0 var(--ink)"><span data-fx="write" data-t="1.7" data-d=".5">LOCAL</span></div>
+    <svg class="a draw" data-fx="draw" data-t="2.2" data-d=".4" style="left:290px;top:640px;width:500px;height:60px" viewBox="0 0 500 60"><path class="k nofill" style="stroke:var(--red);stroke-width:12" d="M10 40 Q150 10 260 30 T490 20"/></svg>
+    <svg class="a draw" data-fx="draw" data-t="2.5" data-d="1.8" style="left:340px;top:740px;width:700px;height:640px" viewBox="0 0 700 640" id="stall"></svg>
+    <div class="a" data-fx="pop" data-t="2.8" data-d=".5" data-svg="persona" style="left:20px;top:1010px;width:300px;height:660px;transform-origin:50% 100%"></div>
+    <div class="a hand-t" style="left:370px;top:1420px;font-size:80px;color:var(--lime)"><span data-fx="write" data-t="4.2" data-d=".9" style="display:inline-block">¡Fresco y de temporada!</span></div>
+  </section>
+
+  <!-- ESCENA 2: Beneficios del mercado local -->
+  <section class="scene" data-dur="10">
+    <div class="a center big" style="top:150px;font-size:96px"><span data-fx="write" data-t=".2" data-d=".8">¿Por qué comprar en el</span></div>
+    <div class="a center big" style="top:255px;font-size:110px;color:var(--orange);text-shadow:4px 4px 0 var(--ink)"><span data-fx="write" data-t="1" data-d=".7">mercado local?</span></div>
+    <svg class="a draw" data-fx="draw" data-t="1.7" data-d=".3" style="left:230px;top:375px;width:620px;height:40px" viewBox="0 0 620 40"><path class="k nofill" style="stroke:var(--lime);stroke-width:12" d="M10 25 Q300 5 610 22"/></svg>
+    <div id="rows"></div>
+  </section>
+
+  <!-- ESCENAS 3-6: frutas (se generan desde JS) -->
+  <div id="fruits"></div>
+
+  <!-- ESCENA 7: Llamada a la acción -->
+  <section class="scene" data-dur="7">
+    <div class="a center hand-t" style="top:150px;font-size:84px"><span data-fx="write" data-t=".2" data-d=".7">Este fin de semana...</span></div>
+    <div class="a center big" style="top:260px;font-size:130px"><span data-fx="write" data-t=".9" data-d=".5">¡Ve a tu</span></div>
+    <div class="a center big" style="top:400px;font-size:104px;color:var(--orange);text-shadow:5px 5px 0 var(--ink)"><span data-fx="write" data-t="1.4" data-d=".8">MERCADO LOCAL!</span></div>
+    <div class="a blob" data-fx="pop" data-t="2" data-d=".5" style="left:140px;top:600px;width:800px;height:620px;background:#FFF1DC"></div>
+    <img class="a photo" src="img/platanos.png" alt="Plátanos" data-fx="pop" data-t="2.2" data-r="-8" style="left:70px;top:560px;width:440px">
+    <img class="a photo" src="img/naranjas.png" alt="Naranjas" data-fx="pop" data-t="2.45" data-r="5" style="left:480px;top:590px;width:530px">
+    <img class="a photo" src="img/limon.png" alt="Limón" data-fx="pop" data-t="2.7" data-r="-4" style="left:130px;top:880px;width:390px">
+    <div class="a photo" data-svg="mandarina" data-fx="pop" data-t="2.95" data-r="6" style="left:560px;top:950px;width:380px;height:342px"></div>
+    <div class="a" data-fx="pop" data-t="3.2" data-d=".5" data-svg="persona" style="left:20px;top:1240px;width:290px;height:638px;transform-origin:50% 100%"></div>
+    <div class="a bubble nw" data-fx="pop" data-t="3.5" style="left:370px;top:1290px;transform-origin:0 50%">¡Fresco, sano<br>y de aquí!</div>
+    <div class="a big nw" style="left:380px;top:1540px;font-size:74px;color:var(--lime)"><span data-fx="write" data-t="4.1" data-d=".6" style="display:inline-block">#ComeLocal</span></div>
+    <div class="a big nw" style="left:380px;top:1630px;font-size:74px;color:var(--mandarina)"><span data-fx="write" data-t="4.7" data-d=".7" style="display:inline-block">#MercadoLocal</span></div>
+    <svg class="a draw" data-fx="draw" data-t="5.5" data-d=".5" style="left:900px;top:1530px;width:130px;height:120px" viewBox="0 0 130 120"><path class="k" style="fill:var(--red)" d="M65 110 C10 70 5 35 30 18 C48 6 62 20 65 32 C68 20 82 6 100 18 C125 35 120 70 65 110Z"/></svg>
+  </section>
+
+  <svg id="hand" viewBox="0 0 560 440" aria-hidden="true">
+    <g transform="rotate(32 20 40)">
+      <path d="M20 40 L58 26 L58 54 Z" fill="#1f2328"/>
+      <rect x="56" y="20" width="300" height="40" rx="8" fill="#2a2d33" stroke="#1f2328" stroke-width="5"/>
+      <rect x="120" y="26" width="120" height="28" rx="4" fill="#f4f4f4"/>
+      <text x="180" y="47" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" fill="#1f2328">MARKER</text>
+      <path d="M200 70 Q190 20 240 6 Q300 -10 360 10 Q410 30 420 80 Q400 130 330 128 Q260 126 225 110 Q200 98 200 70Z" fill="#f2c9a5" stroke="#1f2328" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M150 30 Q170 12 215 18 Q250 24 250 40 Q246 56 215 54 Q180 50 160 48 Q146 44 150 30Z" fill="#f2c9a5" stroke="#1f2328" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M228 80 Q260 70 300 78 M236 104 Q268 96 306 104" fill="none" stroke="#1f2328" stroke-width="5" stroke-linecap="round"/>
+      <path d="M400 20 L560 10 L570 150 L405 130 Z" fill="#2c3e6b" stroke="#1f2328" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M440 18 L448 136 M490 15 L498 142" stroke="#5b73b0" stroke-width="10"/>
+    </g>
+  </svg>
+</div>
+</div>
+
+<div id="controls">
+  <button id="play" aria-label="Pausar">❚❚</button>
+  <button id="restart" aria-label="Reiniciar">↺</button>
+  <div id="bar" role="slider" aria-label="Progreso"><div id="fill"></div></div>
+  <div id="time">0.0 / 0.0</div>
+</div>
+
+<script>
+/* ---------- Ilustraciones en estilo pizarra ---------- */
+const INK = 'class="k"';
+const SVG = {
+  mandarina: `<svg viewBox="0 0 400 360" width="100%" height="100%">
+    <path ${INK} style="fill:#FFB25B" d="M292 236 Q360 220 382 282 Q350 330 292 314 Q276 276 292 236Z"/>
+    <path class="k nofill" style="stroke-width:4" d="M300 250 Q330 270 340 318 M318 238 Q350 262 370 300"/>
+    <ellipse ${INK} cx="170" cy="205" rx="150" ry="128" style="fill:#F26B1D"/>
+    <path class="k nofill" style="stroke:#fff;stroke-opacity:.6;stroke-width:14" d="M78 160 Q105 112 158 100"/>
+    <circle cx="120" cy="240" r="5" fill="#d95a12"/><circle cx="210" cy="270" r="5" fill="#d95a12"/><circle cx="240" cy="170" r="5" fill="#d95a12"/><circle cx="160" cy="300" r="4" fill="#d95a12"/>
+    <path ${INK} style="fill:#7DB83A" d="M172 82 Q235 18 305 46 Q258 104 172 82Z"/>
+    <path class="k nofill" style="stroke-width:4" d="M180 80 Q240 56 296 48"/>
+    <circle ${INK} cx="170" cy="80" r="11" style="fill:#5b7f1f"/>
+  </svg>`,
+  persona: `<svg viewBox="0 0 300 660" width="100%" height="100%">
+    <path ${INK} style="fill:#A9C4DC" d="M92 405 L86 600 L140 600 L152 430 Z"/>
+    <path ${INK} style="fill:#A9C4DC" d="M150 430 L164 600 L216 600 L208 405 Z"/>
+    <path ${INK} style="fill:#fff" d="M84 598 H142 Q152 628 136 632 H72 Q60 616 84 598Z"/>
+    <path ${INK} style="fill:#fff" d="M162 598 H218 Q240 616 228 632 H164 Q150 628 162 598Z"/>
+    <path ${INK} style="fill:#f5d6b8" d="M134 180 H168 V214 H134Z"/>
+    <path ${INK} style="fill:#B8D08A" d="M84 218 Q150 196 216 218 L226 420 Q150 438 78 420 Z"/>
+    <path ${INK} style="fill:#fff" d="M122 206 L150 240 L178 206 Z"/>
+    <path ${INK} style="fill:#B8D08A" d="M88 226 Q58 300 78 392 L104 388 Q96 314 112 256 Z"/>
+    <path ${INK} style="fill:#B8D08A" d="M206 222 Q250 232 270 268 Q286 222 268 168 L240 170 Q252 218 244 236 Q228 226 212 244 Z"/>
+    <circle ${INK} cx="256" cy="156" r="22" style="fill:#f5d6b8"/>
+    <path ${INK} style="fill:#f5d6b8" d="M246 138 Q244 104 260 106 Q272 112 266 140 Z"/>
+    <circle ${INK} cx="94" cy="146" r="14" style="fill:#f5d6b8"/>
+    <circle ${INK} cx="206" cy="146" r="14" style="fill:#f5d6b8"/>
+    <ellipse ${INK} cx="150" cy="140" rx="58" ry="64" style="fill:#f5d6b8"/>
+    <path ${INK} style="fill:#f1f1f1" d="M92 128 Q86 74 120 76 Q124 50 148 62 Q162 42 180 64 Q210 58 206 98 Q214 112 208 128 Q192 98 150 102 Q112 98 92 128Z"/>
+    <ellipse ${INK} cx="128" cy="132" rx="15" ry="19" style="fill:#fff;stroke-width:4"/>
+    <ellipse ${INK} cx="172" cy="132" rx="15" ry="19" style="fill:#fff;stroke-width:4"/>
+    <circle cx="132" cy="136" r="6" fill="#1f2328"/><circle cx="168" cy="136" r="6" fill="#1f2328"/>
+    <path class="k nofill" style="stroke-width:5" d="M150 142 Q142 160 152 164"/>
+    <path ${INK} style="fill:#c0392b;stroke-width:5" d="M120 172 Q150 200 182 170 Q150 182 120 172Z"/>
+  </svg>`,
+  check: (c) => `<svg viewBox="0 0 100 100" width="100%" height="100%">
+    <circle ${INK} cx="50" cy="50" r="42" style="fill:${c};stroke-width:6"/>
+    <path class="k nofill" style="stroke-width:11" d="M26 52 L44 70 L76 32"/>
+  </svg>`,
+};
+
+const STALL = `
+  <line ${INK} x1="70" y1="160" x2="70" y2="610"/><line ${INK} x1="630" y1="160" x2="630" y2="610"/>
+  <path ${INK} style="fill:#fff" d="M40 40 H660 L690 170 H10 Z"/>
+  <path ${INK} style="fill:#E8505B;stroke-width:4" d="M40 40 H102 L78 170 H10 Z M164 40 H226 L214 170 H146 Z M288 40 H350 L350 170 H282 Z M412 40 H474 L486 170 H418 Z M536 40 H598 L622 170 H554 Z"/>
+  <path ${INK} style="fill:#E8505B" d="M10 170 q34 48 68 0 q34 48 68 0 q34 48 68 0 q34 48 68 0 q34 48 68 0 q34 48 68 0 q34 48 68 0 q34 48 68 0 q34 48 68 0 q34 48 68 0 Z"/>
+  <rect ${INK} x="236" y="238" width="228" height="74" rx="12" style="fill:#FFF3D6"/>
+  <text x="350" y="290" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="46" fill="#1f2328">MERCADO</text>
+  <rect ${INK} x="85" y="365" width="160" height="70" style="fill:#D9A066"/>
+  <rect ${INK} x="270" y="365" width="160" height="70" style="fill:#D9A066"/>
+  <rect ${INK} x="455" y="365" width="160" height="70" style="fill:#D9A066"/>
+  <circle ${INK} cx="115" cy="352" r="26" style="fill:#F28C28"/><circle ${INK} cx="165" cy="352" r="26" style="fill:#F28C28"/><circle ${INK} cx="215" cy="352" r="26" style="fill:#F28C28"/>
+  <circle ${INK} cx="140" cy="314" r="26" style="fill:#F28C28"/><circle ${INK} cx="190" cy="314" r="26" style="fill:#F28C28"/>
+  <ellipse ${INK} cx="300" cy="354" rx="26" ry="22" style="fill:#8CC63F"/><ellipse ${INK} cx="350" cy="354" rx="26" ry="22" style="fill:#8CC63F"/><ellipse ${INK} cx="400" cy="354" rx="26" ry="22" style="fill:#8CC63F"/>
+  <ellipse ${INK} cx="325" cy="318" rx="26" ry="22" style="fill:#8CC63F"/><ellipse ${INK} cx="375" cy="318" rx="26" ry="22" style="fill:#8CC63F"/>
+  <path ${INK} style="fill:#F6C945" d="M470 342 Q540 392 615 326 Q602 356 540 364 Q494 364 470 342Z"/>
+  <path ${INK} style="fill:#F6C945" d="M474 316 Q544 362 612 298 Q600 330 540 338 Q496 338 474 316Z"/>
+  <rect ${INK} x="30" y="435" width="640" height="40" rx="6" style="fill:#C98B4E"/>
+  <rect ${INK} x="50" y="475" width="600" height="135" style="fill:#E3A968"/>
+  <line ${INK} x1="50" y1="520" x2="650" y2="520" style="stroke-width:4"/><line ${INK} x1="50" y1="565" x2="650" y2="565" style="stroke-width:4"/>
+  <line ${INK} x1="0" y1="620" x2="700" y2="620"/>`;
+
+const ICONS = [
+  `<circle ${INK} cx="100" cy="100" r="92" style="fill:#E4F2D2"/>
+   <path ${INK} style="fill:#F28C28" d="M68 76 Q100 60 132 76 L106 176 Q100 186 94 176 Z"/>
+   <path class="k nofill" style="stroke-width:5" d="M84 100 H100 M90 128 H106 M94 152 H104"/>
+   <path class="k nofill" style="stroke:#5b9a2a;stroke-width:12" d="M100 68 Q82 28 66 36 M100 68 Q100 18 112 22 M100 68 Q124 30 140 42"/>`,
+  `<circle ${INK} cx="100" cy="100" r="92" style="fill:#FDE3E4"/>
+   <path ${INK} style="fill:#FFF3D6" d="M40 108 L100 50 L160 108 V168 H40 Z"/>
+   <path ${INK} style="fill:#E8505B;stroke-width:5" d="M100 152 C62 124 70 96 100 116 C130 96 138 124 100 152Z"/>`,
+  `<circle ${INK} cx="100" cy="100" r="92" style="fill:#DCEEF8"/>
+   <circle ${INK} cx="100" cy="100" r="66" style="fill:#7EC8E3"/>
+   <path ${INK} style="fill:#8CC63F;stroke-width:5" d="M60 70 Q80 50 100 64 Q98 86 78 92 Q62 96 60 70Z M110 110 Q140 96 152 116 Q146 146 122 150 Q106 136 110 110Z M72 128 Q88 124 92 142 Q80 156 70 146Z"/>`,
+  `<circle ${INK} cx="100" cy="100" r="92" style="fill:#FFF3C4"/>
+   <circle ${INK} cx="100" cy="100" r="62" style="fill:#F6C945"/>
+   <circle ${INK} cx="100" cy="100" r="44" style="fill:#FFDA6A;stroke-width:4"/>
+   <text x="100" y="124" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="70" fill="#1f2328">$</text>`,
+];
+
+/* ---------- Escena 2: filas de beneficios ---------- */
+const ROWS = [
+  ['Más frescos', 'Del campo a tu mesa en horas,<br>no en semanas.'],
+  ['Apoyas a tu comunidad', 'Tu dinero se queda con<br>productores de tu zona.'],
+  ['Cuidas el planeta', 'Menos kilómetros de transporte<br>y menos plástico.'],
+  ['Mejor sabor y precio', 'Fruta de temporada,<br>en su punto justo.'],
+];
+const ARROWS = [
+  'M200 672 C320 760 640 720 850 775 M850 775 l-40 -4 M850 775 l-24 -32',
+  'M880 1004 C760 1090 500 1080 300 1150 M300 1150 l40 -10 M300 1150 l18 -36',
+  'M200 1352 C320 1440 640 1400 850 1455 M850 1455 l-40 -4 M850 1455 l-24 -32',
+];
+document.getElementById('rows').outerHTML = ROWS.map(([t, d], i) => {
+  const top = 430 + i * 340, b = 2 + i * 2, left = i % 2 === 0;
+  const ix = left ? 70 : 780, tx = left ? 340 : 70;
+  return `
+    <svg class="a draw" data-fx="draw" data-t="${b}" data-d=".7" style="left:${ix}px;top:${top}px;width:230px;height:230px" viewBox="0 0 200 200">${ICONS[i]}</svg>
+    <div class="a row-t" style="left:${tx}px;top:${top + 30}px"><span data-fx="write" data-t="${b + .7}" data-d=".6" style="display:inline-block">${t}</span></div>
+    <div class="a row-d" data-fx="fade" data-t="${b + 1.2}" data-d=".4" style="left:${tx}px;top:${top + 104}px;width:680px">${d}</div>
+    ${i < 3 ? `<svg class="a draw" data-fx="draw" data-t="${b + 1.6}" data-d=".35" style="left:0;top:0;width:1080px;height:1920px" viewBox="0 0 1080 1920"><path class="k nofill" style="stroke-width:7" d="${ARROWS[i]}"/></svg>` : ''}`;
+}).join('');
+
+/* ---------- Escenas 3-6: frutas ---------- */
+const FRUITS = [
+  { pre: 'Beneficios de las', name: 'NARANJAS', c: '#F28C28', light: '#FFE6C9', sticker: 'Vitamina<br>C',
+    media: `<img class="a photo" src="img/naranjas.png" alt="Naranjas" data-fx="pop" data-t=".8" data-d=".6" style="left:210px;top:520px;width:680px">
+            <img class="a" src="img/naranja-corte.jpg" alt="Naranja partida" data-fx="pop" data-t="1.1" data-d=".5" data-r="-10" style="left:60px;top:840px;width:250px;mix-blend-mode:multiply">`,
+    bullets: ['Refuerza tus <b>defensas</b>', '<b>Vitamina C</b> en cada gajo', 'Piel <b>sana</b> y luminosa'] },
+  { pre: 'Beneficios del', name: 'LIMÓN', c: '#6FAE2E', light: '#E3F3CF', sticker: 'Súper<br>fresco',
+    media: `<img class="a photo" src="img/limon.png" alt="Limones" data-fx="pop" data-t=".8" data-d=".6" style="left:230px;top:480px;width:620px">`,
+    bullets: ['Ayuda a tu <b>digestión</b>', 'Te anima a <b>hidratarte</b>', 'Rico en <b>antioxidantes</b>'] },
+  { pre: 'Beneficios de las', name: 'MANDARINAS', c: '#F26B1D', light: '#FFE0CC', sticker: 'Snack<br>ideal',
+    media: `<div class="a draw photo" data-svg="mandarina" data-fx="draw" data-t=".8" data-d="1.2" style="left:230px;top:540px;width:620px;height:558px"></div>`,
+    bullets: ['<b>Fácil</b> de pelar y llevar', '<b>Fibra</b> y vitamina C', 'Dulce, ligera y <b>natural</b>'] },
+  { pre: 'Beneficios del', name: 'PLÁTANO', c: '#E0A800', light: '#FFF1C2', sticker: 'Pura<br>energía',
+    media: `<img class="a photo" src="img/platanos.png" alt="Plátanos" data-fx="pop" data-t=".8" data-d=".6" style="left:220px;top:470px;width:640px">`,
+    bullets: ['<b>Potasio</b> para tus músculos', '<b>Energía</b> rápida y natural', '<b>Fibra</b> para tu digestión'] },
+];
+document.getElementById('fruits').outerHTML = FRUITS.map(f => `
+  <section class="scene" data-dur="6" style="--hl:${f.light}">
+    <div class="a center hand-t" style="top:140px;font-size:78px"><span data-fx="write" data-t=".1" data-d=".6">${f.pre}</span></div>
+    <div class="a center big" style="top:235px;font-size:${f.name.length > 8 ? 150 : 180}px;color:${f.c};text-shadow:6px 6px 0 var(--ink)"><span data-fx="write" data-t=".6" data-d=".6">${f.name}</span></div>
+    <div class="a blob" data-fx="pop" data-t=".5" data-d=".5" style="left:190px;top:500px;width:700px;height:560px;background:${f.light}"></div>
+    <svg class="a draw" data-fx="draw" data-t="${f.name === 'MANDARINAS' ? 2 : 1.3}" data-d=".6" style="left:0;top:0;width:1080px;height:1920px" viewBox="0 0 1080 1920">
+      <path class="k nofill" style="stroke:${f.c};stroke-width:9" d="M560 470 C870 460 1010 610 985 780 C955 975 700 1085 480 1062 C220 1040 70 910 96 740 C124 560 330 470 620 486"/>
+    </svg>
+    ${f.media}
+    <div class="a sticker" data-fx="pop" data-t="1.8" data-d=".5" data-r="10" style="left:800px;top:470px;background:${f.c}">${f.sticker}</div>
+    ${f.bullets.map((b, j) => `
+      <div class="a chk" data-fx="draw" data-t="${2.4 + j * 1.1}" data-d=".25" style="top:${1150 + j * 170}px">${SVG.check(f.light)}</div>
+      <div class="a bul" style="top:${1152 + j * 170}px"><span data-fx="write" data-t="${2.65 + j * 1.1}" data-d=".7" style="display:inline-block">${b}</span></div>`).join('')}
+  </section>`).join('');
+
+document.getElementById('stall').innerHTML = STALL;
+document.querySelectorAll('[data-svg]').forEach(el => el.innerHTML = SVG[el.dataset.svg]);
+document.querySelectorAll('[data-fx="draw"]').forEach(el => el.classList.add('draw'));
+
+/* ---------- Motor de animación (línea de tiempo determinista) ---------- */
+const stage = document.getElementById('stage');
+const hand = document.getElementById('hand');
+const DEF = { write: .7, draw: .6, pop: .5, fade: .5 };
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const easeOut = p => 1 - Math.pow(1 - p, 3);
+const easeInOut = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const backOut = p => { const c = 1.7; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+const REC = new URLSearchParams(location.search).has('rec');
+if (REC) document.body.classList.add('rec');
+
+let scale = 1;
+const scenes = [...stage.querySelectorAll('.scene')];
+let total = 0;
+const S = scenes.map(el => {
+  const dur = +el.dataset.dur, start = total; total += dur;
+  const items = [...el.querySelectorAll('[data-fx]')].map(e => {
+    const fx = e.dataset.fx, it = { e, fx, t: +(e.dataset.t || 0), d: +(e.dataset.d || DEF[fx]), r: +(e.dataset.r || 0) };
+    if (fx === 'draw') {
+      const svg = e.tagName.toLowerCase() === 'svg' ? e : e.querySelector('svg');
+      it.svg = svg; it.vb = svg.viewBox.baseVal;
+      let acc = 0;
+      it.shapes = [...svg.querySelectorAll('path,rect,circle,ellipse,line,polyline,polygon')]
+        .filter(s => s.classList.contains('k'))
+        .map(s => { const L = s.getTotalLength(); s.style.strokeDasharray = `${L} ${L + 1}`; const o = { s, L, a: acc }; acc += L; return o; });
+      it.total = acc || 1;
+    }
+    return it;
+  });
+  const strokes = items.filter(i => i.fx === 'write' || i.fx === 'draw').sort((a, b) => a.t - b.t);
+  return { el, dur, start, items, strokes };
+});
+
+function stagePt(x, y) { const r = stage.getBoundingClientRect(); return [(x - r.left) / scale, (y - r.top) / scale]; }
+
+function strokePos(it, p) {
+  if (it.fx === 'write') {
+    const r = it.e.getBoundingClientRect();
+    const [x, y] = stagePt(r.left + r.width * p, r.top + r.height * .72);
+    return [x, y];
+  }
+  const target = p * it.total;
+  let sh = it.shapes[it.shapes.length - 1];
+  for (const s of it.shapes) if (target <= s.a + s.L) { sh = s; break; }
+  const pt = sh.s.getPointAtLength(clamp(target - sh.a, 0, sh.L));
+  const r = it.svg.getBoundingClientRect();
+  return stagePt(r.left + (pt.x - it.vb.x) * r.width / it.vb.width, r.top + (pt.y - it.vb.y) * r.height / it.vb.height);
+}
+
+function apply(it, st) {
+  const p = clamp((st - it.t) / it.d), e = it.e;
+  switch (it.fx) {
+    case 'write': e.style.clipPath = p >= 1 ? 'none' : `inset(-30% ${(1 - p) * 110 - 10}% -30% -6%)`; break;
+    case 'draw':
+      e.style.opacity = p > 0 ? 1 : 0;
+      for (const s of it.shapes) s.s.style.strokeDashoffset = s.L * (1 - clamp((p * it.total - s.a) / s.L));
+      e.style.setProperty('--fo', clamp((p - .55) / .45));
+      break;
+    case 'pop': e.style.opacity = clamp(p * 3); e.style.transform = `scale(${.2 + .8 * backOut(p)}) rotate(${it.r}deg)`; break;
+    case 'fade': e.style.opacity = p; e.style.transform = `translateY(${(1 - easeOut(p)) * 40}px)`; break;
+  }
+}
+
+const OFF = [1300, 2250];
+const lerp = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
+function handPos(sc, st) {
+  let prev = null, next = null;
+  for (const s of sc.strokes) {
+    const end = s.t + s.d;
+    if (st >= s.t && st <= end) {
+      const p = clamp((st - s.t) / s.d), pos = strokePos(s, p);
+      return [pos[0], pos[1] + Math.sin(st * 38) * 4];
+    }
+    if (end < st && (!prev || end > prev.t + prev.d)) prev = s;
+    if (s.t > st && !next) next = s;
+  }
+  const pe = prev && prev.t + prev.d;
+  if (prev && next && next.t - pe < 1.1) return lerp(strokePos(prev, 1), strokePos(next, 0), easeInOut((st - pe) / (next.t - pe)));
+  if (prev && st - pe < .6) return lerp(strokePos(prev, 1), OFF, easeInOut((st - pe) / .6));
+  if (next && next.t - st < .6) return lerp(OFF, strokePos(next, 0), easeInOut(1 - (next.t - st) / .6));
+  return OFF;
+}
+
+let T = 0;
+function render(t) {
+  T = clamp(t, 0, total - 1e-4);
+  let idx = S.findIndex(s => T < s.start + s.dur); if (idx < 0) idx = S.length - 1;
+  S.forEach((s, i) => s.el.style.display = i === idx ? 'block' : 'none');
+  const sc = S[idx], st = T - sc.start;
+  const fadeIn = idx === 0 ? 1 : clamp(st / .3), fadeOut = clamp((sc.dur - st) / .3);
+  sc.el.style.opacity = Math.min(fadeIn, fadeOut);
+  sc.el.style.transform = `scale(${1 + .03 * (1 - Math.min(fadeIn, fadeOut))})`;
+  sc.items.forEach(it => apply(it, st));
+  const [hx, hy] = handPos(sc, st);
+  hand.style.transform = `translate(${hx - 20}px, ${hy - 40}px)`;
+  fill.style.width = (T / total * 100) + '%';
+  timeEl.textContent = `${T.toFixed(1)} / ${total.toFixed(1)} s`;
+}
+
+/* ---------- Reproductor ---------- */
+const frame = document.getElementById('frame'), fill = document.getElementById('fill'), timeEl = document.getElementById('time');
+const playBtn = document.getElementById('play');
+function fit() {
+  scale = REC ? 1 : Math.min((innerWidth - 32) / 1080, (innerHeight - 90) / 1920);
+  frame.style.width = 1080 * scale + 'px'; frame.style.height = 1920 * scale + 'px';
+  stage.style.transform = `scale(${scale})`;
+  render(T);
+}
+addEventListener('resize', fit);
+
+let playing = !REC, last = performance.now();
+function setPlaying(v) { playing = v; playBtn.textContent = v ? '❚❚' : '▶'; playBtn.setAttribute('aria-label', v ? 'Pausar' : 'Reproducir'); last = performance.now(); }
+playBtn.onclick = () => setPlaying(!playing);
+document.getElementById('restart').onclick = () => { render(0); setPlaying(true); };
+document.getElementById('bar').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); render((e.clientX - r.left) / r.width * total); };
+addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); setPlaying(!playing); } });
+function loop(now) {
+  if (playing) { let t = T + (now - last) / 1000; if (t >= total) t = 0; render(t); }
+  last = now; requestAnimationFrame(loop);
+}
+
+window.__total = total;
+window.__seek = t => render(t);
+(document.fonts ? Promise.all(['800 40px "Baloo 2"', '600 40px "Baloo 2"', '700 40px Caveat'].map(f => document.fonts.load(f))).catch(() => {}) : Promise.resolve()).then(() => { fit(); window.__ready = true; if (!REC) requestAnimationFrame(loop); });
+fit();
+</script>
+</body>
+</html>
